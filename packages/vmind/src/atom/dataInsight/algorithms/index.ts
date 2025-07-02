@@ -114,16 +114,18 @@ const revisedInsightByTypeMapping: Record<
 };
 
 export const getInsights = (context: DataInsightExtractContext, options: DataInsightOptions) => {
-  const { algorithms, maxNum, isLimitedbyChartType, detailMaxNum = [], language } = options;
+  const { algorithms, maxNum, isLimitedbyChartType, language } = options;
+  let { detailMaxNum = [] } = options;
   const { chartType, cell, spec, originDataset } = context;
   const insights: Insight[] = [];
   const insightAlgorithmContext = { ...context, insights };
   const isStack = isStackChart(spec, chartType, cell);
   const isPercent = isPercentChart(spec, chartType, cell);
 
-  algorithms.sort(
-    (a: string, b: string) => (algorithmMapping as any)[a].priority - (algorithmMapping as any)[b].priority
-  );
+  algorithms.sort((a: string, b: string) => {
+    return (algorithmMapping as any)?.[a]?.priority - (algorithmMapping as any)?.[b]?.priority;
+  });
+
   algorithms.forEach(key => {
     const algoInfo = algorithmMapping[key].info;
     const {
@@ -182,6 +184,21 @@ export const getInsights = (context: DataInsightExtractContext, options: DataIns
       : 1;
   });
   let afterLimitsInsights: Insight[] = [...revisedInsights];
+
+  //增加洞察兼容性处理
+  if (!detailMaxNum || detailMaxNum?.length == 0) {
+    detailMaxNum = [
+      {
+        types: ['outlier', 'pair_outlier', 'extreme_value', 'turning_point', 'majority_value'] as InsightType[],
+        maxNum: 3
+      },
+      { types: ['abnormal_band'] as InsightType[], maxNum: 3 },
+      { types: ['correlation'] as InsightType[], maxNum: 2 },
+      { types: ['overall_trend'] as InsightType[], maxNum: 2 },
+      { types: ['abnormal_trend'] as InsightType[], maxNum: 3 }
+    ];
+  }
+
   detailMaxNum.forEach(item => {
     const { types, maxNum } = item;
     const filteredInsights = revisedInsights.filter(insight => types.includes(insight.type)).slice(maxNum);
