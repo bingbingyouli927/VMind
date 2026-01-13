@@ -278,7 +278,7 @@ class VMind {
       [AtomName.IMAGE_READER]: !!image
     };
     const { chartType, chartAdvistorRes, spec, command, cell, vizSchema, dataTable, time, usage, error } =
-      await this.data2ChartSchedule.run(undefined, shouldRunList);
+      await this.data2ChartSchedule.run(userCommand, shouldRunList);  // 没有第一个参数，在执行run函数时，不会执行runWithChat，也就不会调用大模型
     return {
       chartType,
       spec,

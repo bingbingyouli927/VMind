@@ -160,6 +160,7 @@ export class SpecInsightAtom extends BaseAtom<SpecInsightCtx, SpecInsightOptions
   protected getMarkPointText(type: InsightType, value: string) {
     switch (type) {
       case InsightType.Min:
+        return value ? `Min: ${value}` : 'Min';
       case InsightType.Max:
         return value ? `${type}: ${value}` : type;
       case InsightType.TurningPoint:

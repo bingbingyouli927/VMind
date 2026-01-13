@@ -34,8 +34,10 @@ const chartTypeMap: { [chartName: string]: string } = {
  * @returns
  */
 export const getVChartTypeByVmind = (type: string) => {
-  if (chartTypeMap[type]) {
-    return chartTypeMap[type];
+  const upperType = String(type).toUpperCase();
+  // 如果图形出现小写，则会报错。需要转换为大写
+  if (chartTypeMap[upperType]) {
+    return chartTypeMap[upperType];
   }
 
   return null;
